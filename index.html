@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Eksekutif Penjualan - Starglas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#f97316',
+                        shopee: '#ee4d2d',
+                        tokopedia: '#03ac0e'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .glass-card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f1f5f9; }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center font-bold text-xl shadow-md">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <div>
+                            <span class="font-bold text-xl text-gray-900">Starglas <span class="text-primary">Analytics</span></span>
+                            <p class="text-xs text-gray-500">Laporan Pemegang Saham 2026</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <select id="periodFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block p-2.5 outline-none" onchange="updateDashboard()">
+                        <option value="Q1">Kuartal 1 (Jan-Mar 2026)</option>
+                        <option value="JAN">Januari 2026</option>
+                        <option value="FEB">Februari 2026</option>
+                        <option value="MAR">Maret 2026</option>
+                    </select>
+                    <button onclick="window.print()" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-file-pdf"></i> Cetak / Ekspor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Welcome Message -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Ringkasan Kinerja Eksekutif</h1>
+            <p class="text-gray-500 mt-1">Ikhtisar penjualan marketplace (Shopee & Tokopedia) periode Q1 2026.</p>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Gross Revenue -->
+            <div class="glass-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Pendapatan Kotor</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mt-1" id="kpi-gross">Rp 425.400.000</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-green-500 font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +12.5%</span>
+                    <span class="text-gray-400 ml-2">vs Q4 2025</span>
+                </div>
+            </div>
+
+            <!-- Net Revenue -->
+            <div class="glass-card p-6 relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-2 h-full bg-green-500"></div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Pendapatan Bersih (Nett)</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mt-1" id="kpi-net">Rp 358.200.000</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-gray-500">Estimasi Margin: <span class="font-bold text-gray-800">84.2%</span></span>
+                </div>
+            </div>
+
+            <!-- Total Items Sold -->
+            <div class="glass-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Produk Terjual (Pcs)</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mt-1" id="kpi-qty">842.500</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-green-500 font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +8.2%</span>
+                    <span class="text-gray-400 ml-2">vs Q4 2025</span>
+                </div>
+            </div>
+
+            <!-- Average Order Value -->
+            <div class="glass-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Rata-rata Order (AOV)</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mt-1" id="kpi-aov">Rp 1.245.000</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-gray-500">Dari <span class="font-bold text-gray-800">341</span> Transaksi</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Trend Chart (Takes 2 columns on large screens) -->
+            <div class="glass-card p-6 lg:col-span-2">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">Tren Pendapatan Bulanan (Q1 2026)</h3>
+                    <button class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
+                <div class="relative h-80 w-full">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Marketplace Proportion -->
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">Kontribusi Marketplace</h3>
+                </div>
+                <div class="relative h-64 w-full flex justify-center">
+                    <canvas id="channelChart"></canvas>
+                </div>
+                <div class="mt-6 space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-shopee"></span>
+                            <span class="text-sm text-gray-600 font-medium">Shopee</span>
+                        </div>
+                        <span class="text-sm font-bold">78.5%</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-tokopedia"></span>
+                            <span class="text-sm text-gray-600 font-medium">Tokopedia</span>
+                        </div>
+                        <span class="text-sm font-bold">21.5%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Top Selling Products (Bar Chart) -->
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">Top 5 Produk (Volume Penjualan)</h3>
+                </div>
+                <div class="relative h-72 w-full">
+                    <canvas id="productChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Table -->
+            <div class="glass-card p-6 flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">Detail Performa Produk Utama</h3>
+                    <a href="#" class="text-sm text-primary hover:underline">Lihat Semua</a>
+                </div>
+                <div class="overflow-x-auto flex-grow">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 rounded-tl-lg">Nama Item / Barang</th>
+                                <th scope="col" class="px-4 py-3 text-right">Total Qty</th>
+                                <th scope="col" class="px-4 py-3 text-right">Nilai Nett (Est)</th>
+                                <th scope="col" class="px-4 py-3 text-center rounded-tr-lg">Tren</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data extracted dynamically from Sheet3.csv mockup -->
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium text-gray-900">CUP STARGLAS 22 OZ - B</td>
+                                <td class="px-4 py-3 text-right font-semibold text-gray-800">146.550</td>
+                                <td class="px-4 py-3 text-right text-green-600 font-medium">Rp 1.436.075</td>
+                                <td class="px-4 py-3 text-center text-green-500"><i class="fa-solid fa-caret-up"></i></td>
+                            </tr>
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium text-gray-900">CUP STARGLAS 22 OZ - A</td>
+                                <td class="px-4 py-3 text-right font-semibold text-gray-800">125.300</td>
+                                <td class="px-4 py-3 text-right text-green-600 font-medium">Rp 1.300.038</td>
+                                <td class="px-4 py-3 text-center text-green-500"><i class="fa-solid fa-caret-up"></i></td>
+                            </tr>
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium text-gray-900">CUP STARGLAS 18 OZ SLIM</td>
+                                <td class="px-4 py-3 text-right font-semibold text-gray-800">96.550</td>
+                                <td class="px-4 py-3 text-right text-green-600 font-medium">Rp 947.178</td>
+                                <td class="px-4 py-3 text-center text-gray-400"><i class="fa-solid fa-minus"></i></td>
+                            </tr>
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium text-gray-900">CUP STARGLAS 16 OZ</td>
+                                <td class="px-4 py-3 text-right font-semibold text-gray-800">92.000</td>
+                                <td class="px-4 py-3 text-right text-green-600 font-medium">Rp 511.334</td>
+                                <td class="px-4 py-3 text-center text-red-500"><i class="fa-solid fa-caret-down"></i></td>
+                            </tr>
+                            <tr class="bg-white hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium text-gray-900 rounded-bl-lg">CUP STARGLAS 10 OZ</td>
+                                <td class="px-4 py-3 text-right font-semibold text-gray-800">80.950</td>
+                                <td class="px-4 py-3 text-right text-green-600 font-medium">Rp 444.726</td>
+                                <td class="px-4 py-3 text-center text-green-500 rounded-br-lg"><i class="fa-solid fa-caret-up"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="text-center text-sm text-gray-400 mt-8">
+            <p>Data disimulasikan dari gabungan rekap master file CSV (Shopee & Tokopedia). Diperbarui: 23 April 2026.</p>
+        </footer>
+
+    </main>
+
+    <!-- Script for Charts and Interactivity -->
+    <script>
+        // Formatting function for Rupiah
+        const formatRp = (number) => {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+        };
+        
+        // Formatting function for Numbers
+        const formatNumber = (number) => {
+            return new Intl.NumberFormat('id-ID').format(number);
+        };
+
+        // Data Mockup based on uploaded CSV context
+        const dashboardData = {
+            'Q1': { gross: 425400000, net: 358200000, qty: 842500, aov: 1245000 },
+            'JAN': { gross: 129212716, net: 108500000, qty: 250000, aov: 1100000 },
+            'FEB': { gross: 145000000, net: 122000000, qty: 285000, aov: 1250000 },
+            'MAR': { gross: 151187284, net: 127700000, qty: 307500, aov: 1385000 }
+        };
+
+        // Global Chart Instances
+        let trendChartObj, channelChartObj, productChartObj;
+
+        // Initialize Charts on Window Load
+        window.onload = function() {
+            initCharts();
+        };
+
+        function updateDashboard() {
+            const period = document.getElementById('periodFilter').value;
+            const data = dashboardData[period];
+            
+            // Update KPI Cards with simple animation
+            document.getElementById('kpi-gross').innerText = formatRp(data.gross);
+            document.getElementById('kpi-net').innerText = formatRp(data.net);
+            document.getElementById('kpi-qty').innerText = formatNumber(data.qty);
+            document.getElementById('kpi-aov').innerText = formatRp(data.aov);
+            
+            // In a real app, we would also update chart data here.
+            // For this UI mockup, the charts remain static showing Q1 trends.
+        }
+
+        function initCharts() {
+            // Setup common chart options
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
+
+            // 1. Trend Line Chart (Gross vs Net)
+            const ctxTrend = document.getElementById('trendChart').getContext('2d');
+            
+            // Gradient for Gross Line
+            const gradientGross = ctxTrend.createLinearGradient(0, 0, 0, 400);
+            gradientGross.addColorStop(0, 'rgba(14, 165, 233, 0.2)');
+            gradientGross.addColorStop(1, 'rgba(14, 165, 233, 0)');
+
+            trendChartObj = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['Januari', 'Februari', 'Maret'],
+                    datasets: [
+                        {
+                            label: 'Pendapatan Kotor',
+                            data: [129212716, 145000000, 151187284],
+                            borderColor: '#0ea5e9', // primary
+                            backgroundColor: gradientGross,
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#0ea5e9',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Pendapatan Bersih (Nett)',
+                            data: [108500000, 122000000, 127700000],
+                            borderColor: '#10b981', // green
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            fill: false,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#10b981',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true } },
+                        tooltip: {
+                            mode: 'index', intersect: false, backgroundColor: 'rgba(255, 255, 255, 0.9)', titleColor: '#1e293b', bodyColor: '#475569', borderColor: '#e2e8f0', borderWidth: 1,
+                            callbacks: {
+                                label: function(context) { return context.dataset.label + ': ' + formatRp(context.raw); }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: {
+                            grid: { color: '#f1f5f9' },
+                            ticks: { callback: function(value) { return 'Rp ' + (value / 1000000) + ' Jt'; } }
+                        }
+                    }
+                }
+            });
+
+            // 2. Marketplace Channel Doughnut Chart
+            const ctxChannel = document.getElementById('channelChart').getContext('2d');
+            channelChartObj = new Chart(ctxChannel, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Shopee', 'Tokopedia'],
+                    datasets: [{
+                        data: [78.5, 21.5],
+                        backgroundColor: ['#ee4d2d', '#03ac0e'], // Brand colors
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return ' ' + context.label + ': ' + context.raw + '%'; }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 3. Top Products Bar Chart (Horizontal)
+            const ctxProduct = document.getElementById('productChart').getContext('2d');
+            productChartObj = new Chart(ctxProduct, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        ['CUP STARGLAS', '22 OZ - B'], 
+                        ['CUP STARGLAS', '22 OZ - A'], 
+                        ['CUP STARGLAS', '18 OZ SLIM'], 
+                        ['CUP STARGLAS', '16 OZ'], 
+                        ['CUP STARGLAS', '10 OZ']
+                    ],
+                    datasets: [{
+                        label: 'Qty Terjual',
+                        data: [146550, 125300, 96550, 92000, 80950],
+                        backgroundColor: '#818cf8', // Indigo
+                        borderRadius: 6,
+                        barThickness: 'flex',
+                        maxBarThickness: 24
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Makes it horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return ' Terjual: ' + formatNumber(context.raw) + ' Pcs'; }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { display: false }, border: {display: false} },
+                        y: { grid: { display: false }, border: {display: false}, ticks: { font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
